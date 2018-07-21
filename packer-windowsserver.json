@@ -1,0 +1,75 @@
+{
+
+	"builders": 
+		[
+		  {
+			"type": "vsphere-iso",
+			"vcenter_server": "{{user `vcenter_server`}}",
+			"insecure_connection": "true",
+			"username": "insert username here",
+			"password": "{{user `service account password variable`}}",
+			"datacenter": "datacenter name",
+			"cluster": "cluster name",
+
+			"vm_name": "{{user `vm_name`}}",
+			"convert_to_template": "true",
+			"folder":  "templates folder name",
+			"communicator": "winrm",
+			"winrm_username": "Administrator username",
+			"winrm_password": "{{user `password variable`}}",
+			"winrm_timeout": "6h",
+			"winrm_use_ntlm": "true",
+			"shutdown_timeout": "1h",
+			"host": "host name",
+			"datastore":  "datastore name",
+			"CPUs": "1",
+			"CPU_limit": -1,  
+			"ram": "4096",
+			"network": "dvportgroup name",
+			"network_card": "vmxnet3",
+			"guest_os_type": "{{user `guest_os_type variable`}}",
+			"disk_controller_type": "pvscsi",
+				"disk_size": "50000",
+			"disk_thin_provisioned": true,
+			"iso_paths": 
+				[
+				"[datastore name] ISO/{{user `iso_path`}}",
+				"[datastore name] ISO/VMwareTools/version_goes_here/windows.iso"
+				],
+			"floppy_files": 
+				[
+				"windows/common/",
+				"windows/{{user `os_name variable`}}/Autounattend.xml"
+      			],
+
+			"boot_order": "disk,cdrom"
+		  }
+		],
+	
+	"provisioners":
+		[
+		  {
+		    "type": "powershell",
+			"elevated_user": "Administrator username",
+			"elevated_password": "{{user `password variable`}}",
+			"start_retry_timeout": "90m",
+			"script": "./windows/common/disablesipv6.ps1"	
+		  },
+		  {
+			"type": "powershell",
+			"elevated_user": "Administrator username",
+			"elevated_password": "{{user `password variable`}}",
+			"script": "./windows/common/winupdates.ps1"
+		  },
+		  {
+			"type": "windows-shell",
+			"pause_before": "50m",
+			"script": "./windows/common/cleanup.bat"
+		  },
+		  {
+		    "type": "windows-restart",
+			"pause_before": "3m",
+			"restart_timeout": "2h"
+		  }
+		]
+}
