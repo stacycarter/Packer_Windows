@@ -28,6 +28,7 @@
 			"network": "dvportgroup name",
 			"network_card": "vmxnet3",
 			"guest_os_type": "{{user `guest_os_type variable`}}",
+			"cdrom_adapter_type": "ide",
 			"disk_controller_type": "pvscsi",
 				"disk_size": "50000",
 			"disk_thin_provisioned": true,
